@@ -1,0 +1,493 @@
+https://github.com/piotr-jura-udemy/laravel-vue-spa-course
+
+1- install laravel project
+->composer create-project --prefer-dist laravel/laravel:6.4.0 laravelbnb
+
+
+//===========================================================================//
+
+
+2- To Run Project 
+->php artisan serve
+
+
+
+//===========================================================================//
+
+
+
+3- we need to install laravel ui (Scaffolding)
+->composer require laravel/ui:^1.0 --dev
+->php artisan ui vue
+->npm install
+->npm run dev
+
+you can found an issue if you found it delete node_modules and run npm install again 
+
+if you still face this isssue you can try this 
+https://stackoverflow.com/questions/64625050/error-node-sass-version-5-0-0-is-incompatible-with-4-0-0
+
+if every things okay you will find the files is public/css/app.css ,  public/js/app.css .
+
+
+//===========================================================================//
+
+
+
+
+4- go to welcome and include 
+<script src="{{ asset('js/app.js') }}" defer></script>
+You are running Vue in development mode.
+Make sure to turn on production mode when deploying for production.
+
+
+
+//===========================================================================//
+
+
+
+5-install vue router .... https://router.vuejs.org/installation.html#direct-download-cdn
+
+->npm install vue-router
+
+
+
+go to resource/js here all your vue js files will be 
+
+
+
+//===========================================================================//
+
+
+
+6- create routes files in resource/js calles routes.js
+-> First define your routes
+-> In routes file you need to import components that you need to use
+-> Create the router instance and pass the `routes` option 
+-> Import VueRouter from 'vue-router';
+-> Export default router
+
+
+
+//===========================================================================//
+
+
+7- Go to app.js and import router
+->import router from './routes';
+->import VueRouter from 'vue-router';
+->Vue.use(VueRouter);
+-> add the router to the const app 
+
+
+
+//===========================================================================//
+
+
+
+8- finally we need to tell vue and VueRouter where it shold render
+-> go to welcome.blade.php in side id=app 
+-><router-view></router-view>
+
+
+
+
+//===========================================================================//
+
+
+9- if you need to remove # in url use history mode in VueRouter
+
+
+
+//===========================================================================//
+
+
+
+10 - if you need to move between pages we need to use links (to use SPA Application ) GLocal 
+->notes we register components in app.js
+->if we define global component we can use it in another component
+
+
+
+//===========================================================================//
+
+
+
+11- we need to make a local registration becuase 
+globally registering all components means that even if you stop using a component, it could still be included in your final build. This unnecessarily increases the amount of JavaScript your users have to download.
+
+
+
+//===========================================================================//
+
+
+
+12 - if you import the components in routes.js you don't need to define it global in app.js 
+
+
+
+//===========================================================================//
+
+
+
+13- we need to make a layout for our application so we will create index.vue and cut the router-view from welcome to it 
+->note that every vue must have only 1 root element (<tamplate>) 
+->it can contain more that div
+->note that index is a local component so you need to add it in const app
+
+
+//===========================================================================//
+
+
+14- for links we use
+-><router-link></router-link> it take to paramater that refere to components<router-link to="/">
+-><router-link to="./">Home</router-link>
+
+as we told before we can make give the route a name so we can use it in the router-link
+
+so we can make the router-link like this <router-link :to="{name:'home'}"> and : before to to bind the vairable
+you also can find it as v-bind
+
+
+//===========================================================================//
+
+
+
+15- if you need to use boostrap and style the page just include this 
+we can use bootstrap classes to style our app
+-><nav class="navbar bg-white border-bottom navbar-light">
+-><div class="container mt-4 mb-4 pr-4 pl-4">
+
+
+//===========================================================================//
+
+
+16-single file components must have 
+->https://vuejs.org/v2/guide/single-file-components.html
+->.vue
+->template  that will render the output
+->it may contain script that make your busines login for your component and it is pure js 
+->it may also contain style tag
+
+
+//===========================================================================//
+
+
+17-it is very important to seperate your app so you should make folders inside resources/js for each part
+->note that only one <template> 
+->now we have 2 vue and we need to render one vue in other one but this vue is not global so we need to register it 
+
+
+//===========================================================================//
+
+
+
+18- the Way to register component locally 
+->go to the file that we need to render it in side (the Parent vue)
+->import the child in the parent 
+
+<script>
+	import BookableListItem from './BookableListItem';
+	export default {
+		components: {
+			BookableListItem,
+		},
+	}
+</script>
+
+
+//===========================================================================//
+
+
+
+19- if we need to path dynamic data we need to know the concept of prop 
+https://vuejs.org/v2/guide/components-props.html
+->prop is a custom attribute that you can give to your component 
+->we can define (props) inside our components
+
+<script>
+	export default{
+		props: ['title', 'content'],
+	}
+</script>
+
+->if we need to print prop we just call it inside {{ propname }}
+-><BookableListItem title='Cheap Villa' content='A very cheap Villa'></BookableListItem>
+
+
+->note that you must use kebab-case in HTML
+<blog-post post-title="hello!"></blog-post>
+
+->every prop is string by default so if you need to use any other type you must define prop and it type 
+props: {
+  title: String,
+  likes: Number,
+  isPublished: Boolean,
+  commentIds: Array,
+  author: Object,
+  callback: Function,
+  contactsPromise: Promise // or any other constructor
+}
+->if you need to use this you must bind in html 
+-><BookableListItem :price=1000></BookableListItem>
+
+
+
+//===========================================================================//
+
+
+
+20- one way data flow
+https://vuejs.org/v2/guide/components-props.html#One-Way-Data-Flow
+
+->every time the parent component is updated, all props in the child component will be refreshed with the latest value. This means you should not attempt to mutate a prop inside a child component. If you do, Vue will warn you in the console.
+
+<script>
+	export default{
+		props: {
+		  	itemTitle: String,
+		  	itemContent: String,
+		  	price: Number,
+		},
+		mounted(){
+			console.log(this.itemTitle);
+			this.itemTitle = 'New Title';  ////  warning
+		}
+	}
+</script>
+
+ Avoid mutating a prop directly since the value will be overwritten whenever the parent component re-renders. Instead, use a data or computed property based on the prop's value. Prop being mutated: "itemTitle" 
+
+
+
+//===========================================================================//
+
+
+ 21- Instance life cycle hooks 
+
+ https://vuejs.org/v2/guide/instance.html#Instance-Lifecycle-Hooks
+ ->beforeCreate
+ ->created
+ ->beforeMount
+ ->mounted
+ ->beforeUpdate
+ ->updated
+ ->beforeDestroy
+ ->destroy
+
+
+//===========================================================================//
+
+
+
+ we prefere using created in api or mounted 
+
+ 22- 
+https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function
+ a very important concept is how to render the data when you get it from api ? 
+ -> there is something called data
+-> data Must Be a Function
+-> Instead, a component’s data option must be a function, so that each instance can maintain an independent copy of the returned data object:
+->If Vue didn’t have this rule, clicking on one button would affect the data of all other instances,
+
+
+//===========================================================================//
+
+
+
+23 - Reactive means that when you change data parent the child changed so we can change in vue according to the api 
+-> to make some thing like this we need first to define data function and define prop inside it 
+->noet that data function return data
+
+data(){
+			return {
+				bookable1: {
+					title : "Cheap Villa !!!",
+					content : "A very cheap Villa",
+				},
+				bookable2: {
+					title : "Cheap Villa 2",
+					content : "A very cheap Villa 2",
+				},
+			}
+		},
+setTimeout(()=>{
+				this.bookable1.title = "Expensive Villa";
+				this.bookable2.title = "very Expensive Villa";
+			},5000);
+
+->if you don't define a prop in the data you cann't use the concept of reactive (change it in the view)
+
+
+//===========================================================================//
+
+
+
+24- Now we will cover conditional if we need to render some data after page loading as an example
+https://vuejs.org/v2/guide/conditional.html
+->v-if="bookable1!==null"
+
+->also there is v-else
+
+
+
+//===========================================================================//
+
+
+
+25- if you need to loop to render data Mapping an Array to Elements with v-for
+https://vuejs.org/v2/guide/list.html
+->
+<ul id="example-1">
+  <li v-for="item in items" :key="item.message">
+    {{ item.message }}
+  </li>
+</ul>
+
+->note that you must use key in for
+->if you don't have key i can make something like this v-for="(item,key) in items"
+
+->very important notes is that we can't use v-if in for loop because v-for is high priority
+so we need to check this link
+https://vuejs.org/v2/guide/list.html#v-for-with-v-if
+
+<li v-for="todo in todos" v-if="!todo.isComplete">
+  {{ todo }}
+</li>
+
+->only the variable in loop use in its skope 
+
+
+
+//===========================================================================//
+
+26- if you need to define a prop and this prop will change in the run time so there is a Computed Properties
+https://vuejs.org/v2/guide/computed.html#Computed-Properties
+->any funtion in computed will access it by name normally 
+
+
+//===========================================================================//
+
+27-There are also important thing called methods 
+->we can use method in another methods
+
+
+
+//================================================//
+
+28- to setup  database open .env file and edit on it
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravelbnb
+DB_USERNAME=root
+DB_PASSWORD=
+
+
+//================================================//
+
+29 - every database in laravel controlled in migrations files 
+-> you will find migration files in database/migratgions
+->any migration have 2 main funtions 
+->up functions (that you will define the table structure)
+->down functions (if you run it you will delete your changes in this migration file)
+->by default laravel create some table for us 
+->Laravel Migration Error: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes
+https://stackoverflow.com/questions/42244541/laravel-migration-error-syntax-error-or-access-violation-1071-specified-key-wa
+
+
+->https://laravel.com/docs/5.8/migrations
+
+->to run the migrations files we will use this command 
+->php artisan migrate
+
+//================================================//
+
+30 - models 
+-> php artisan make:model Flight -m
+-> -m to create a migration file for it 
+
+
+//================================================//
+
+31- faker in laravel means that you need to fill model with some fake data
+->https://laravel.com/docs/5.8/database-testing#writing-factories
+->php artisan make:factory PostFactory --model=Post
+
+//================================================//
+
+32 - Database seeder (used to seed database ) insert data
+->php artisan make:seeder UsersTableSeeder
+->here we can define how many rows will inserted in batabase
+-Calling Additional Seeders
+->Within the DatabaseSeeder class, you may use the call method to execute
+->php artisan db:seed --class=UsersTableSeeder
+-php artisan migrate:refresh --seed
+
+//=========================================//
+
+33- routes 
+->php artisan route:list
+
+Route::get('bookables',function(Request $request){
+	return Bookable::all();
+});
+
+
+
+//=========================================//
+
+34- postman 
+->we need to create workspace for your project
+->we ned to create new environment
+
+
+//=========================================//
+
+35- Promises
+->https://www.youtube.com/watch?v=jb3B2eyKCDU
+->https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+->before learn promises we need to know first about that is the diffrence between synchronous vs asynchronous
+
+->synchronous : work stop by step 
+->asynchronous : work in the same time 
+
+->in some time we need to use synchronous if we need to wait for the first request to run to get data from it and then continue to next one 
+
+->promises has man Excuter
+const myPromise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('foo');
+  }, 300);
+});
+
+
+resolve => then 
+reject => catch
+
+
+
+//=========================================//
+
+36- 
+Using Axios to Consume APIs
+->Now we need to get data from server
+->https://vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
+
+const request = axios.get('/api/bookables').then(response=>{
+				this.bookables = response.data;
+				this.loading = false;
+			});
+
+
+
+
+
+
+
+
+		
+
+
+
